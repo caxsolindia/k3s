@@ -1,0 +1,26 @@
+## for Create Self Signed Certificate:
+
+sudo apt install openssl
+ 
+1. Generate a Private Key
+ 
+openssl genpkey -algorithm RSA -out private.key -aes256
+ 
+2. Generate a Certificate Signing Request (CSR)
+ 
+openssl req -new -key private.key -out request.csr
+ 
+3. Generate the Self-Signed Certificate
+ 
+openssl x509 -req -days 365 -in request.csr -signkey private.key -out certificate.crt
+ 
+4. Verify the Certificate
+ 
+openssl x509 -in certificate.crt -text -noout
+
+## create secret for SSL:
+
+openssl pkcs8 -topk8 -inform PEM -outform PEM -in /home/ubuntu/private.key -out /home/ubuntu/private-rsa.key -nocrypt
+kubectl create secret tls nginx-selfsigned-cert --cert=/home/ubuntu/certificate.crt --key=/home/ubuntu/private.key -n default
+
+
