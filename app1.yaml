@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-react-app-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-react-app
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: my-react-app
+        version: v1
+    spec:
+      containers:
+      - name: my-react-app
+        image: gcr.io/google-samples/hello-app:1.0
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: ecr-secret-ro
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-react-app-v1
+spec:
+  selector:
+    app: my-react-app
+    version: v1
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

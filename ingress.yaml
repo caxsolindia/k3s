@@ -1,0 +1,55 @@
+# IngressRoute and Middleware for the first app: my-react-app-v1
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: my-react-app-v1-ingress
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: PathPrefix(`/app1`)
+      kind: Rule
+      services:
+        - name: my-react-app-v1
+          port: 8080
+      middlewares:
+        - name: my-react-app-v1-stripprefix
+  tls:
+    secretName: nginx-selfsigned-cert
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: my-react-app-v1-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /app1
+---
+# IngressRoute and Middleware for the second app: my-react
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: my-react-ingress
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: PathPrefix(`/app2`)
+      kind: Rule
+      services:
+        - name: my-react
+          port: 80
+      middlewares:
+        - name: my-react-stripprefix
+  tls:
+    secretName: nginx-selfsigned-cert
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: my-react-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /app2
